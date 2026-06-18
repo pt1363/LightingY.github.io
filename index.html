@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡️Lighting⚡️</title>
+    <style>
+        :root {
+            --bg-color: #060911;
+            --card-bg: #0d1220;
+            --text-color: #92a2b8;
+            --text-main: #ffffff;
+            --border-color: #162238;
+            --input-bg: #090d16;
+            --input-border: #1e2f4d;
+            
+            --blue-glow: #00a2ff;
+            --yellow-glow: #ffe600;
+            --orange-glow: #ff7b00;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --text-color: #4a5568;
+            --text-main: #1a202c;
+            --border-color: #cbd5e1;
+            --input-bg: #f8fafc;
+            --input-border: #94a3b8;
+            
+            --blue-glow: #0070f3;
+            --yellow-glow: #d4af37;
+            --orange-glow: #e65c00;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: rgba(6, 9, 17, 0.95);
+            border-bottom: 2px solid;
+            border-image: linear-gradient(to left, var(--yellow-glow), var(--blue-glow), var(--orange-glow), var(--blue-glow)) 1;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 162, 255, 0.08);
+        }
+
+        [data-theme="light"] header {
+            background: rgba(240, 244, 248, 0.95);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ffe600, #ff7b00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(255, 230, 0, 0.3);
+            cursor: pointer;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 10px;
+        }
+
+        .nav-item {
+            padding: 10px 18px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: var(--text-main);
+            background: rgba(0, 162, 255, 0.05);
+            border-color: rgba(0, 162, 255, 0.3);
+            box-shadow: 0 0 15px rgba(0, 162, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .settings-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .gear-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-main);
+            padding: 5px;
+            touch-action: manipulation;
+        }
+
+        .btn-control {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            touch-action: manipulation;
+        }
+
+        .btn-control:hover {
+            border-color: var(--blue-glow);
+            box-shadow: 0 0 10px rgba(0, 162, 255, 0.2);
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 15px;
+            width: 100%;
+            flex: 1;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 280px;
+            height: 100%;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card.launcher-card::before { background: linear-gradient(to bottom, var(--yellow-glow), var(--orange-glow)); }
+        .card.launcher-card:hover { border-color: var(--yellow-glow); box-shadow: 0 5px 25px rgba(255, 230, 0, 0.12); }
+        
+        .card.optimizer-card::before { background: linear-gradient(to bottom, var(--blue-glow), var(--yellow-glow)); }
+        .card.optimizer-card:hover { border-color: var(--blue-glow); box-shadow: 0 5px 25px rgba(0, 162, 255, 0.12); }
+
+        .card.vpn-card::before { background: linear-gradient(to bottom, var(--blue-glow), var(--orange-glow)); }
+        .card.vpn-card:hover { border-color: var(--orange-glow); box-shadow: 0 5px 25px rgba(255, 123, 0, 0.12); }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .card-title {
+            font-size: 20px;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-desc {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-color);
+            margin-bottom: 20px;
+        }
+
+        .download-btn {
+            display: inline-block;
+            color: #fff;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+            touch-action: manipulation;
+            margin-top: auto;
+        }
+
+        .launcher-btn { background: linear-gradient(45deg, #b3a200, #ff7b00); }
+        .launcher-btn:hover { background: linear-gradient(45deg, var(--yellow-glow), var(--orange-glow)); color: #000; box-shadow: 0 0 20px rgba(255, 230, 0, 0.3); }
+
+        .optimizer-btn { background: linear-gradient(45deg, #0055b3, #00a2ff); }
+        .optimizer-btn:hover { background: linear-gradient(45deg, var(--blue-glow), #ffffff); color: #000; box-shadow: 0 0 20px rgba(0, 162, 255, 0.3); }
+
+        .vpn-btn { background: linear-gradient(45deg, #0066cc, #ff7b00); }
+        .vpn-btn:hover { background: linear-gradient(45deg, var(--blue-glow), var(--orange-glow)); color: #000; box-shadow: 0 0 20px rgba(0, 162, 255, 0.3); }
+
+        .panel-box {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 30px rgba(0, 162, 255, 0.04);
+        }
+
+        .panel-box h2 {
+            color: var(--text-main);
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 22px;
+        }
+
+        .vps-login-form {
+            max-width: 450px;
+            margin: 20px auto;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .form-title {
+            font-size: 16px;
+            color: var(--blue-glow);
+            margin-bottom: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--text-color);
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            padding: 12px;
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--blue-glow);
+            box-shadow: 0 0 8px rgba(0, 162, 255, 0.15);
+        }
+
+        .vps-connect-btn {
+            width: 100%;
+            background: linear-gradient(45deg, var(--blue-glow), var(--yellow-glow));
+            color: #000;
+            border: none;
+            padding: 14px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .vps-manager {
+            margin-top: 25px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .vps-header {
+            background: var(--card-bg);
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+            color: var(--blue-glow);
+            gap: 10px;
+        }
+
+        .vps-toolbar {
+            background: rgba(22, 34, 56, 0.2);
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-tool {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .btn-tool:hover {
+            border-color: var(--blue-glow);
+        }
+
+        .file-list {
+            padding: 5px;
+            list-style: none;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            cursor: pointer;
+        }
+
+        .file-item:hover {
+            background: rgba(0, 162, 255, 0.05);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-grow: 1;
+        }
+
+        .file-name {
+            color: var(--text-main);
+            font-size: 14px;
+            word-break: break-all;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-action {
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            padding: 4px 8px;
+            font-size: 12px;
+            border-radius: 4px;
+        }
+
+        .btn-action:hover {
+            color: var(--text-main);
+            background: var(--border-color);
+        }
+
+        .hero {
+            text-align: center;
+            padding: 60px 15px;
+            background: radial-gradient(circle at center, rgba(0,162,255,0.06) 0%, rgba(0,0,0,0) 70%);
+            margin-bottom: 10px;
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            color: var(--text-main);
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            color: var(--text-color);
+            font-size: 17px;
+            max-width: 650px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+            font-size: 13px;
+            color: var(--text-color);
+        }
+
+        body.lang-en { direction: ltr; text-align: left; }
+        body.lang-en .vps-login-form, body.lang-en .vps-manager { text-align: left; }
+        body.lang-fa { direction: rtl; text-align: right; }
+        body.lang-fa .vps-login-form, body.lang-fa .vps-manager { text-align: right; }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 12px;
+                padding: 12px 15px;
+                align-items: stretch;
+            }
+            .nav-top-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+            }
+            .nav-right {
+                width: 100%;
+                flex-direction: column;
+                gap: 12px;
+            }
+            nav {
+                width: 100%;
+            }
+            .nav-links {
+                width: 100%;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            .nav-links li {
+                width: 100%;
+            }
+            .nav-item {
+                display: block;
+                text-align: center;
+                padding: 12px 10px;
+                font-size: 14px;
+                border-radius: 12px;
+                background: var(--card-bg);
+                border: 1px solid var(--border-color);
+            }
+            .gear-toggle {
+                display: block;
+            }
+            .settings-controls {
+                width: 100%;
+                display: none;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                background: rgba(22, 34, 56, 0.3);
+                padding: 10px;
+                border-radius: 12px;
+                border: 1px solid var(--border-color);
+                animation: fadeIn 0.2s ease forwards;
+            }
+            .settings-controls.show-mobile {
+                display: grid;
+            }
+            .btn-control {
+                justify-content: center;
+                padding: 12px;
+                border-radius: 10px;
+            }
+            .hero h1 {
+                font-size: 28px;
+            }
+            .hero p {
+                font-size: 15px;
+            }
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            .vps-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body class="lang-fa" data-theme="dark">
+
+    <header>
+        <div class="nav-container">
+            <div class="nav-top-row">
+                <div class="logo" onclick="switchTab('home')">⚡️Lighting⚡️</div>
+                <button class="gear-toggle" onclick="toggleMobileSettings()" id="gear-btn">⚙️</button>
+            </div>
+            <div class="nav-right">
+                <nav>
+                    <ul class="nav-links">
+                        <li><div class="nav-item active" id="btn-home" onclick="switchTab('home')" data-localize="nav_home">صفحه اصلی</div></li>
+                        <li><div class="nav-item" id="btn-about" onclick="switchTab('about')" data-localize="nav_about">About</div></li>
+                        <li><div class="nav-item" id="btn-downloads" onclick="switchTab('downloads')" data-localize="nav_downloads">Downloads</div></li>
+                        <li><div class="nav-item" id="btn-vpn" onclick="switchTab('vpn')" data-localize="nav_vpn">LightingVPDpanel</div></li>
+                    </ul>
+                </nav>
+                <div class="settings-controls" id="settings-panel">
+                    <button class="btn-control" onclick="toggleTheme()" id="theme-btn">☀️ Light</button>
+                    <button class="btn-control" onclick="toggleLang()" id="lang-btn">🌐 EN</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Home Tab -->
+        <div id="tab-home" class="tab-content active">
+            <div class="hero">
+                <h1 data-localize="hero_title">به دنیای قدرت و سرعت خوش آمدید</h1>
+                <p data-localize="hero_desc">مجموعه‌ای از ابزارهای حرفه‌ای بهینه‌سازی، برنامه‌ها و لانچر اختصاصی با بالاترین راندمان ممکن و طراحی مدرن.</p>
+            </div>
+        </div>
+
+        <!-- About Tab -->
+        <div id="tab-about" class="tab-content">
+        </div>
+
+        <!-- Downloads Tab -->
+        <div id="tab-downloads" class="tab-content">
+            <h2 style="color: var(--text-main); margin-bottom: 10px; font-size: 24px;" data-localize="dl_title">مرکز دانلود ابزارها و برنامه‌ها</h2>
+            <p style="color: var(--text-color); margin-bottom: 25px; font-size: 14px;" data-localize="dl_subtitle">نسخه‌های پایدار، رسمی و بهینه‌سازی‌شده را به راحتی دریافت کنید.</p>
+            
+            <div class="grid-container">
+                <div class="card launcher-card">
+                    <div class="card-body">
+                        <div class="card-title" data-localize="card1_title">🎮 LightingLauncher (Minecraft)</div>
+                        <div class="card-desc" data-localize="card1_desc">نسخه پایدار لانچر اختصاصی ماینکرافت. مجهز به سیستم فوق پیشرفته مدیریت مودها و افزایش نرخ فریم (FPS) بازی.</div>
+                    </div>
+                    <button class="download-btn launcher-btn" onclick="alert('Download soon!')" data-localize="btn_download">دانلود برنامه</button>
+                </div>
+                
+                <div class="card optimizer-card">
+                    <div class="card-body">
+                        <div class="card-title" data-localize="card2_title">⚙️ oPTimizer App</div>
+                        <div class="card-desc" data-localize="card2_desc">نرم‌افزار جامع و حرفه‌ای مدیریت، پاکسازی هارد، آزادسازی رم و کاهش شدید لگ ویندوز. ابزاری حیاتی برای گیمرها.</div>
+                    </div>
+                    <button class="download-btn optimizer-btn" onclick="alert('Download soon!')" data-localize="btn_download">دانلود برنامه</button>
+                </div>
+                
+                <div class="card vpn-card">
+                    <div class="card-body">
+                        <div class="card-title" data-localize="card3_title">🌐 LightingVPDpanel App</div>
+                        <div class="card-desc" data-localize="card3_desc">نسخه اپلیکیشن مستقل پنل مدیریت و اتصالات هوشمند شبکه جهت پایداری بالا و دسترسی سریع در ویندوز.</div>
+                    </div>
+                    <button class="download-btn vpn-btn" onclick="alert('Download soon!')" data-localize="btn_download">دانلود برنامه</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- LightingVPDpanel Tab -->
+        <div id="tab-vpn" class="tab-content">
+            <div class="panel-box">
+                <h2 data-localize="vpn_panel_title">🌐 LightingVPDpanel (استفاده آنلاین)</h2>
+                <p style="color: var(--text-color); line-height: 1.6; margin-bottom: 25px; font-size: 14px; text-align: center;" data-localize="vpn_panel_desc">
+                    شما هم‌اکنون در محیط تحت وب و آنلاین پنل اتصالات شبکه قرار دارید. برای مشاهده فایل‌ها، ابتدا به سرور متصل شوید.
+                </p>
+                
+                <div class="vps-login-form" id="vps-auth-box">
+                    <div class="form-title" data-localize="login_title">🔒 ورود به سرور مجازی (VPS)</div>
+                    
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 2;">
+                            <label data-localize="label_ip">آدرس آی‌پی (IP Address)</label>
+                            <input type="text" id="vps-ip" class="form-control" placeholder="185.220.40.12" value="">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label data-localize="label_port">پورت (Port)</label>
+                            <input type="text" id="vps-port" class="form-control" placeholder="22" value="">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label data-localize="label_user">نام کاربری (Username)</label>
+                        <input type="text" id="vps-user" class="form-control" placeholder="administrator" value="">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label data-localize="password123">رمز عبور (Password)</label>
+                        <input type="password" id="vps-pass" class="form-control" placeholder="••••••••" value="">
+                    </div>
+                    
+                    <button class="vps-connect-btn" onclick="connectToVps()" data-localize="btn_connect">اتصال برقرار شود ⚡️</button>
+                </div>
+                
+                <div class="vps-manager" id="vps-file-box">
+                    <div class="vps-header">
+                        <span id="vps-server-title">🖥️ Connection</span>
+                        <span style="color: #ffe600; font-weight: bold;" data-localize="status_connected">● متصل شد ✔️</span>
+                    </div>
+                    <div class="vps-toolbar">
+                        <button class="btn-tool" onclick="createNewFile()" data-localize="tool_new">➕ ایجاد فایل جدید</button>
+                    </div>
+                    <ul class="file-list" id="vps-files-ul">
+                    </ul>
+                </div>
+                
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 ⚡️Lighting⚡️. <span data-localize="footer_rights">تمامی حقوق محفوظ است.</span></p>
+    </footer>
+
+    <script>
+        let currentTheme = 'dark';
+        let currentLang = 'fa';
+
+        let mockFiles = [
+            { id: 1, name: 'root_configs', type: 'dir', size: '--' },
+            { id: 2, name: 'vpn_protocols', type: 'dir', size: '--' },
+            { id: 3, name: 'server_logs.txt', type: 'file', size: '45 KB' },
+            { id: 4, name: 'core_settings.json', type: 'file', size: '12 KB' }
+        ];
+
+        const localization = {
+            fa: {
+                nav_home: "صفحه اصلی", nav_about: "About", nav_downloads: "Downloads", nav_vpn: "LightingVPDpanel",
+                hero_title: "به دنیای قدرت و سرعت خوش آمدید",
+                hero_desc: "مجموعه‌ای از ابزارهای حرفه‌ای بهینه‌سازی، برنامه‌ها و لانچر اختصاصی با بالاترین راندمان ممکن و طراحی مدرن.",
+                dl_title: "مرکز دانلود ابزارها و برنامه‌ها",
+                dl_subtitle: "نسخه‌های پایدار، رسمی و بهینه‌سازی‌شده را به راحتی دریافت کنید.",
+                card1_title: "🎮 LightingLauncher (Minecraft)",
+                card1_desc: "نسخه پایدار لانچر اختصاصی ماینکرافت. مجهز به سیستم فوق پیشرفته مدیریت مودها و افزایش نرخ فریم (FPS) بازی.",
+                card2_title: "⚙️ oPTimizer App",
+                card2_desc: "نرم‌افزار جامع و حرفه‌ای مدیریت، پاکسازی هارد، آزادسازی رم و کاهش شدید لگ ویندوز. ابزاری حیاتی برای گیمرها.",
+                card3_title: "🌐 LightingVPDpanel App",
+                card3_desc: "نسخه اپلیکیشن مستقل پنل مدیریت و اتصالات هوشمند شبکه جهت پایداری بالا و دسترسی سریع در ویندوز.",
+                btn_download: "دانلود برنامه",
+                vpn_panel_title: "🌐 LightingVPDpanel (استفاده آنلاین)",
+                vpn_panel_desc: "شما هم‌اکنون در محیط تحت وب و آنلاین پنل اتصالات شبکه قرار دارید. برای مشاهده فایل‌ها، ابتدا به سرور متصل شوید.",
+                login_title: "🔒 ورود به سرور مجازی (VPS)",
+                label_ip: "آدرس آی‌پی (IP Address)", label_port: "پورت (Port)", label_user: "نام کاربری (Username)", label_pass: "رمز عبور (Password)",
+                btn_connect: "اتصال برقرار شود ⚡️", status_connected: "● متصل شد ✔️", footer_rights: "تمامی حقوق محفوظ است.",
+                tool_new: "➕ ایجاد فایل جدید"
+            },
+            en: {
+                nav_home: "Home", nav_about: "About", nav_downloads: "Downloads", nav_vpn: "LightingVPDpanel",
+                hero_title: "Welcome to the World of Power & Speed",
+                hero_desc: "A collection of professional optimization utilities, apps, and dedicated launchers with maximum efficiency and modern design.",
+                dl_title: "Download Center",
+                dl_subtitle: "Get stable, official, and optimized versions of utilities easily.",
+                card1_title: "🎮 LightingLauncher (Minecraft)",
+                card1_desc: "Stable version of our custom launcher. Equipped with an advanced mod manager and massive FPS booster.",
+                card2_title: "⚙️ oPTimizer App",
+                card2_desc: "Comprehensive windows tweaking tool to clean disk, free up RAM, and eliminate lags. Vital for gamers.",
+                card3_title: "🌐 LightingVPDpanel App",
+                card3_desc: "Standalone client app for the control panel, ensuring high stability and rapid network connections.",
+                btn_download: "Download App",
+                vpn_panel_title: "🌐 LightingVPDpanel (Online Console)",
+                vpn_panel_desc: "You are currently inside the web console of the network panel. Authenticate to explore your files.",
+                login_title: "🔒 VPS Remote Login",
+                label_ip: "IP Address", label_port: "Port", label_user: "Username", label_pass: "Password",
+                btn_connect: "Establish Connection ⚡️", status_connected: "● Connected ✔️", footer_rights: "All rights reserved.",
+                tool_new: "➕ Create New File"
+            }
+        };
+
+        function toggleMobileSettings() {
+            const panel = document.getElementById('settings-panel');
+            panel.classList.toggle('show-mobile');
+        }
+
+        function switchTab(tabName) {
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+
+            const targetTab = document.getElementById('tab-' + tabName);
+            if (targetTab) targetTab.classList.add('active');
+
+            let btnId = 'btn-' + tabName;
+            if(tabName === 'home') btnId = 'btn-home';
+            const targetBtn = document.getElementById(btnId);
+            if (targetBtn) targetBtn.classList.add('active');
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function connectToVps() {
+            const ip = document.getElementById('vps-ip').value || '185.220.40.12';
+            const user = document.getElementById('vps-user').value || 'administrator';
+            
+            document.getElementById('vps-server-title').innerText = `🖥️ Connection: ${user}@${ip}`;
+            document.getElementById('vps-auth-box').style.display = 'none';
+            document.getElementById('vps-file-box').style.display = 'block';
+            renderFiles();
+        }
+
+        function renderFiles() {
+            const ul = document.getElementById('vps-files-ul');
+            ul.innerHTML = '';
+            
+            mockFiles.forEach(file => {
+                const li = document.createElement('li');
+                li.className = 'file-item';
+                
+                const icon = file.type === 'dir' ? '📁' : '📄';
+                
+                li.innerHTML = `
+                    <div class="file-info">
+                        <span class="file-icon">${icon}</span>
+                        <span class="file-name">${file.name}</span>
+                    </div>
+                    <div class="file-actions">
+                        <button class="btn-action" onclick="editFile(${file.id}, event)">✏️</button>
+                        <button class="btn-action" onclick="deleteFile(${file.id}, event)">❌</button>
+                        <span class="file-size" style="margin-right:10px; margin-left:10px;">${file.size}</span>
+                    </div>
+                `;
+                ul.appendChild(li);
+            });
+        }
+
+        function createNewFile() {
+            const name = prompt(currentLang === 'fa' ? 'نام فایل یا پوشه جدید را وارد کنید:' : 'Enter new file or folder name:');
+            if (!name) return;
+            const isDir = name.indexOf('.') === -1;
+            const newId = mockFiles.length ? Math.max(...mockFiles.map(f => f.id)) + 1 : 1;
+            mockFiles.push({
+                id: newId,
+                name: name,
+                type: isDir ? 'dir' : 'file',
+                size: isDir ? '--' : '0 KB'
+            });
+            renderFiles();
+        }
+
+        function editFile(id, event) {
+            event.stopPropagation();
+            const file = mockFiles.find(f => f.id === id);
+            if (!file) return;
+            const newName = prompt(currentLang === 'fa' ? 'نام جدید را وارد کنید:' : 'Enter new name:', file.name);
+            if (!newName) return;
+            file.name = newName;
+            renderFiles();
+        }
+
+        function deleteFile(id, event) {
+            event.stopPropagation();
+            if (!confirm(currentLang === 'fa' ? 'آیا از حذف این مورد اطمینان دارید؟' : 'Are you sure you want to delete this?')) return;
+            mockFiles = mockFiles.filter(f => f.id !== id);
+            renderFiles();
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            document.getElementById('theme-btn').innerText = currentTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
+        }
+
+        function toggleLang() {
+            currentLang = currentLang === 'fa' ? 'en' : 'fa';
+            document.body.className = currentLang === 'fa' ? 'lang-fa' : 'lang-en';
+            document.getElementById('lang-btn').innerText = currentLang === 'fa' ? '🌐 EN' : '🌐 FA';
+            
+            const elements = document.querySelectorAll('[data-localize]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-localize');
+                if (localization[currentLang][key]) {
+                    el.innerText = localization[currentLang][key];
+                }
+            });
+            renderFiles();
+        }
+    </script>
+</body>
+</html>
